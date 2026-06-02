@@ -6,6 +6,16 @@ A full-stack showcase application demonstrating how the **Model Context Protocol
 ![Backend](https://img.shields.io/badge/Backend-Express_&_SSE-green)
 ![Infrastructure](https://img.shields.io/badge/Infra-Terraform_&_AWS-purple)
 
+## 🧠 How this demonstrates MCP (Model Context Protocol)
+
+The [Model Context Protocol (MCP)](https://modelcontextprotocol.io/) is an open standard that connects AI models to external tools and live datasets. This application visualizes what a **self-healing infrastructure agent** built on MCP concepts looks like in practice:
+
+1. **MCP Resources (Providing Context)**: An AI agent needs to know what is running. The Node.js backend represents an MCP Server, exposing live AWS telemetry (via CloudWatch and Tagging APIs) and local `terraform.tfstate` files as standardized MCP `resources`. 
+2. **MCP Tools (Taking Action)**: To fix infrastructure, the AI needs actionable commands. The backend defines critical infrastructure actions (e.g., `plan_terraform`, `apply_terraform`, `check_drift`) as MCP `tools`.
+3. **The Agent Loop (Visibility)**: The dedicated **AI Agent Panel** in the bottom-left of the Dashboard UI visualizes this real-time interaction. You can watch the agent passively poll context via `resources/read`, identify anomalies (Drift), and autonomously execute a `tools/call` (like `apply_terraform`) to restore state parity.
+
+*(Note: To provide a reliable, high-speed UI demonstration without incurring constant LLM token costs, the Express backend orchestrates a simulated AI reasoning loop that behaves exactly like an MCP client, overlaying those simulated decisions onto your real AWS resource data).*
+
 ## 🔄 End-to-End Flow
 How does this system actually work together?
 
