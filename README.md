@@ -6,63 +6,80 @@ A full-stack showcase application demonstrating how the **Model Context Protocol
 ![Backend](https://img.shields.io/badge/Backend-Express_&_SSE-green)
 ![Infrastructure](https://img.shields.io/badge/Infra-Terraform_&_AWS-purple)
 
-## ✨ Core Features
+## 🔄 End-to-End Flow
+How does this system actually work together?
 
-*   🤖 **AI MCP Agent Panel**: Real-time visualization of agent context queries, reasoning, and automated tool calls (e.g., `resources/read`, `plan_terraform`).
-*   📡 **Live Telemetry Stream**: Built with Server-Sent Events (SSE) to stream deployment logs, health checks, and drift detection events directly to a custom terminal UI.
-*   📊 **Live Resource & API Metrics**: Real-time plotting of simulated API traffic and resource states (Provisioning, Available, Drift).
-*   🏗️ **Accompanying Terraform**: Included `terraform/main.tf` structurally maps to the showcased dashboard resources (Lambda, DynamoDB, API Gateway, Kinesis).
+1. **Provisioning (Terraform)**: You run `terraform apply` locally. This creates the physical infrastructure in your real AWS account. All resources are tagged with `ManagedBy = "mcp-agent"`.
+2. **Telemetry & Discovery (Express.js Backend)**: The Node.js server acts as the "MCP Host". It uses the AWS SDK to query the `ResourceGroupsTaggingAPIClient` and `CloudWatchClient` to dynamically discover anything running in your account with that tag.
+3. **AI Contextualization (Simulation)**: In a full MCP architecture, an AI Agent uses this data context to reason about your architecture. Our backend simulates this agent reasoning loop, deciding if infrastructure is healthy or if drift has occurred based on live remote state vs local tfstate.
+4. **Real-time UI Visualization (React)**: The Express backend opens a highly efficient Server-Sent Events (SSE) stream to the React frontend, pumping a live feed of agent thoughts, telemetry metrics, and AWS resource states instantly to the dashboard.
 
-## 🛠️ Tech Stack
+## 🏗️ What gets installed in AWS?
 
-*   **Frontend**: React 19, Tailwind CSS v4, Framer Motion (animations), Recharts (data viz), Lucide React (icons).
-*   **Backend**: Express.js (Node.js) handling Vite SSR/Middleware, API routes, and Server-Sent Events (SSE) for the real-time simulator.
-*   **Infrastructure as Code**: Terraform (`hashicorp/aws`).
+When you run `terraform apply` inside the `/terraform` directory, following serverless resources are deployed. *Note: Most of these fit well within the AWS Free Tier.*
 
-## 📂 Project Structure
-
-```text
-├── src/
-│   ├── components/      # React UI components (Dashboard, Terminal, Metrics, etc.)
-│   ├── lib/utils.ts     # Tailwind merge utilities
-│   ├── types.ts         # Shared TypeScript interfaces (Logs, Resources, MCP calls)
-│   ├── App.tsx          # Main Application Layout
-│   └── index.css        # Global Tailwind styling & CSS variables
-├── terraform/
-│   └── main.tf          # Terraform configuration for AWS resources
-├── server.ts            # Express backend driving the real-time simulation & SSE
-└── package.json         # Project dependencies and build scripts
-```
+*   **AWS DynamoDB Table** (`users-table-ddb`): A Pay-Per-Request NoSQL database.
+*   **AWS IAM Role** (`auth-lambda-role`): Gives execution permissions to the Lambda function.
+*   **AWS Lambda Function** (`auth-lambda-func`): A Node.js compute function configured with environment variables pointing to the DynamoDB table.
+*   **AWS API GatewayV2 (HTTP API)** (`prod-api-gateway`): Serves as the high-throughput entry point, routing requests to the Lambda function.
+*   **AWS Kinesis Stream** (`events-stream`): A data stream deployed specifically in `eu-west-1` to demonstrate cross-region infrastructure tracking.
 
 ## 🚀 Getting Started
 
-### Running the Dashboard
-
-The application runs as a unified full-stack Vite + Express application.
-
+### 1. Backend & Dashboard
 1.  **Install Dependencies:**
     ```bash
     npm install
     ```
-2.  **Start the Development Server:**
+2.  **AWS Credentials (`.env`)**: To power the live AWS integration, create a `.env` file mimicking `.env.example`:
+    ```env
+    AWS_ACCESS_KEY_ID="your-access-key"
+    AWS_SECRET_ACCESS_KEY="your-secret-key"
+    AWS_REGION="us-east-1"
+    ```
+3.  **Start the Local Server:**
     ```bash
     npm run dev
     ```
-    The application will automatically boot up. If running locally, navigate to `http://localhost:3000`.
+    Navigate to `http://localhost:3000`.
 
-### Running the Terraform
+### 2. Infrastructure (Executing Terraform from your laptop)
+You do not need to enter credentials manually during the apply step if your environment is set up. Terraform reads the standard AWS credentials from your machine.
 
-The actual AWS infrastructure code resides in the `/terraform` directory.
-
-1.  Navigate to the terraform directory:
+1.  Navigate and Initialize:
     ```bash
     cd terraform
-    ```
-2.  Initialize and apply (Requires configured AWS CLI credentials):
-    ```bash
     terraform init
+    ```
+2.  Be sure you have AWS credentials exported in your terminal session, or an active AWS CLI profile (e.g., `aws configure`).
+3.  Deploy:
+    ```bash
     terraform plan
     terraform apply
     ```
 
-*Note: The frontend dashboard currently runs a simulated backend loop in `server.ts` to actively showcase the MCP interactions, telemetry streaming, and drift remediations without requiring a live AWS/Terraform backend hookup.*
+## 🛠️ Troubleshooting
+
+### Error: `EADDRINUSE: address already in use 0.0.0.0:3000`
+If you encounter this error when running `npm run dev`, it means another process on your laptop is already using Port 3000 (often a lingering Node server).
+
+**To fix this on macOS/Linux:**
+1. Find the hidden process ID (PID) locking the port:
+   ```bash
+   lsof -i :3000
+   ```
+2. Forcefully kill the process (replace `<PID>` with the number shown in the output):
+   ```bash
+   kill -9 <PID>
+   ```
+
+**To fix this on Windows:**
+1. Find the PID:
+   ```cmd
+   netstat -ano | findstr :3000
+   ```
+2. Kill it:
+   ```cmd
+   taskkill /PID <PID> /F
+   ```
+After killing the zombie process, run `npm run dev` again!
