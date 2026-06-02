@@ -44,6 +44,21 @@ Model Context Protocol (MCP) is an open standard, not a native AWS service, so t
 2. **AWS Resource Groups & Tag Editor**: Go to **Resource Groups > Tag Editor** and search for resources with the tag `ManagedBy : mcp-agent`. This shows you the exact blast radius of resources the MCP agent has been granted context over.
 3. **Amazon CloudWatch**: If the agent detects drift and automatically remediates it (e.g., updating a DynamoDB table capacity), the resulting performance shifts and API calls will be visible in CloudWatch Metrics.
 
+## 🎯 How to Demo the Kinesis Stream
+
+The Kinesis Data Stream (`events-stream`) is automatically provisioned when you run `terraform apply`. To simulate live application events flowing through the system for a demo:
+
+1. **Locate it in AWS**: Open the AWS Console, navigate to **Amazon Kinesis** -> **Data streams**, and ensure you are in the `us-west-2` region.
+2. **Push a Demo Event**: You can inject a live payload into the stream directly from your laptop using the AWS CLI. Run this command to send a base64-encoded JSON payload (`{"event": "system_scale", "status": "ok"}`):
+   ```bash
+   aws kinesis put-record \
+     --stream-name events-stream \
+     --partition-key "demo-partition-01" \
+     --data "eyJldmVudCI6ICJzeXN0ZW1fc2NhbGUiLCAic3RhdHVzIjogIm9rIn0=" \
+     --region us-west-2
+   ```
+3. **Verify**: You can view the incoming data points in the **Data Viewer** tab of the Kinesis Stream in the AWS Console, or monitor the `PutRecords` metrics spiking in CloudWatch.
+
 ## 🚀 Getting Started
 
 ### 1. Backend & Dashboard
