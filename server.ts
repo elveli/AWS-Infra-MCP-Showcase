@@ -9,7 +9,7 @@ import { CloudWatchClient, GetMetricStatisticsCommand } from "@aws-sdk/client-cl
 import { ResourceGroupsTaggingAPIClient, GetResourcesCommand } from "@aws-sdk/client-resource-groups-tagging-api";
 
 const USE_LIVE_AWS = !!(process.env.AWS_ACCESS_KEY_ID && process.env.AWS_SECRET_ACCESS_KEY);
-const awsRegion = process.env.AWS_REGION || "us-east-1";
+const awsRegion = process.env.AWS_REGION || "us-west-2";
 
 const cwClient = USE_LIVE_AWS ? new CloudWatchClient({ region: awsRegion }) : null;
 const tagClient = USE_LIVE_AWS ? new ResourceGroupsTaggingAPIClient({ region: awsRegion }) : null;
@@ -22,9 +22,9 @@ let metrics: MetricPoint[] = [];
 // Fallback initial state if Live AWS is disabled
 if (!USE_LIVE_AWS) {
   resources = [
-    { id: "res-1", name: "prod-api-gateway", type: "AWS::ApiGateway::RestApi", region: "us-east-1", status: "available", lastUpdated: new Date().toISOString() },
-    { id: "res-2", name: "auth-lambda-func", type: "AWS::Lambda::Function", region: "us-east-1", status: "available", lastUpdated: new Date().toISOString() },
-    { id: "res-3", name: "users-table-ddb", type: "AWS::DynamoDB::Table", region: "us-east-1", status: "available", lastUpdated: new Date().toISOString() },
+    { id: "res-1", name: "prod-api-gateway", type: "AWS::ApiGateway::RestApi", region: "us-west-2", status: "available", lastUpdated: new Date().toISOString() },
+    { id: "res-2", name: "auth-lambda-func", type: "AWS::Lambda::Function", region: "us-west-2", status: "available", lastUpdated: new Date().toISOString() },
+    { id: "res-3", name: "users-table-ddb", type: "AWS::DynamoDB::Table", region: "us-west-2", status: "available", lastUpdated: new Date().toISOString() },
     { id: "res-4", name: "events-stream", type: "AWS::Kinesis::Stream", region: "eu-west-1", status: "available", lastUpdated: new Date().toISOString() }
   ];
 

@@ -11,7 +11,7 @@ terraform {
 
 # Default Provider
 provider "aws" {
-  region = "us-east-1"
+  region = "us-west-2"
 }
 
 # EU Provider for Kinesis Stream (as shown in the dashboard)

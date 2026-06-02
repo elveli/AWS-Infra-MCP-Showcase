@@ -35,7 +35,7 @@ When you run `terraform apply` inside the `/terraform` directory, following serv
     ```env
     AWS_ACCESS_KEY_ID="your-access-key"
     AWS_SECRET_ACCESS_KEY="your-secret-key"
-    AWS_REGION="us-east-1"
+    AWS_REGION="us-west-2"
     ```
 3.  **Start the Local Server:**
     ```bash

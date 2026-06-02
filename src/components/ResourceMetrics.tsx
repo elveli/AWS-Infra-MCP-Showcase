@@ -27,7 +27,7 @@ export function ResourceMetrics() {
           <Server className="w-4 h-4 text-slate-400" />
           Infrastructure State (TF)
         </h3>
-        <span className="px-2 py-1 bg-slate-800 text-slate-400 text-xs rounded-md border border-slate-700">us-east-1</span>
+        <span className="px-2 py-1 bg-slate-800 text-slate-400 text-xs rounded-md border border-slate-700">us-west-2</span>
       </div>
 
       <div className="space-y-3 overflow-y-auto pr-2 flex-1">

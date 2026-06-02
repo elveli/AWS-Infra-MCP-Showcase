@@ -19,7 +19,7 @@ export default function App() {
               <BoxSelect className="w-5 h-5 text-indigo-400"/>
               Serverless Control Plane
             </h1>
-            <p className="text-xs text-slate-400">AWS Region: us-east-1 // Managed by MCP Agent</p>
+            <p className="text-xs text-slate-400">AWS Region: us-west-2 // Managed by MCP Agent</p>
           </div>
           
           <div className="flex gap-4">
