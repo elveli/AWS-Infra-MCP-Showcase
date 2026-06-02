@@ -57,7 +57,23 @@ The Kinesis Data Stream (`events-stream`) is automatically provisioned when you 
      --data "eyJldmVudCI6ICJzeXN0ZW1fc2NhbGUiLCAic3RhdHVzIjogIm9rIn0=" \
      --region us-west-2
    ```
-3. **Verify**: You can view the incoming data points in the **Data Viewer** tab of the Kinesis Stream in the AWS Console, or monitor the `PutRecords` metrics spiking in CloudWatch.
+3. **Verify via AWS CLI**: To read the event you just pushed without leaving the terminal, you first need a shard iterator, then you can read the records:
+   ```bash
+   # 1. Get the Shard Iterator (assuming shardId-000000000000 is the only shard)
+   SHARD_ITERATOR=$(aws kinesis get-shard-iterator \
+     --stream-name events-stream \
+     --shard-id shardId-000000000000 \
+     --shard-iterator-type TRIM_HORIZON \
+     --region us-west-2 \
+     --query 'ShardIterator' \
+     --output text)
+
+   # 2. Read the records from the stream
+   aws kinesis get-records \
+     --shard-iterator $SHARD_ITERATOR \
+     --region us-west-2
+   ```
+   *(Note: The `Data` field in the response will be base64-encoded. In Linux/macOS, you can pipe it to `base64 --decode` to see the original payload).*
 
 ## 🚀 Getting Started
 
