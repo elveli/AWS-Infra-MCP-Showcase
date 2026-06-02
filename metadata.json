@@ -1,0 +1,6 @@
+{
+  "name": "AWS Infra MCP Showcase",
+  "description": "An AI Model Context Protocol dashboard for real-time Serverless Terraform management and audit trailing in AWS.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

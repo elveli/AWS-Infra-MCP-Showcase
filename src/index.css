@@ -1,0 +1,27 @@
+@import "tailwindcss";
+
+@theme {
+  --color-aws-squid-ink: #232F3E;
+  --color-aws-anchor: #000000;
+  --color-aws-amazon-orange: #FF9900;
+  --color-aws-secondary-blue: #00A1C9;
+  
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+}
+
+body {
+  @apply bg-slate-950 text-slate-100 antialiased font-sans overflow-x-hidden;
+}
+
+/* Custom scrollbar for terminals and panes */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  @apply bg-slate-900/50 rounded;
+}
+::-webkit-scrollbar-thumb {
+  @apply bg-slate-700/50 rounded hover:bg-slate-600;
+}
