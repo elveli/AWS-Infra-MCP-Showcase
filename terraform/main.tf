@@ -14,12 +14,6 @@ provider "aws" {
   region = "us-west-2"
 }
 
-# EU Provider for Kinesis Stream (as shown in the dashboard)
-provider "aws" {
-  alias  = "eu"
-  region = "eu-west-1"
-}
-
 # ==========================================
 # 1. DynamoDB Table (users-table-ddb)
 # ==========================================
@@ -97,7 +91,6 @@ resource "aws_apigatewayv2_route" "default_route" {
 # 4. Kinesis Stream (events-stream)
 # ==========================================
 resource "aws_kinesis_stream" "events_stream" {
-  provider         = aws.eu
   name             = "events-stream"
   shard_count      = 1
   retention_period = 24

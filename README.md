@@ -22,7 +22,27 @@ When you run `terraform apply` inside the `/terraform` directory, following serv
 *   **AWS IAM Role** (`auth-lambda-role`): Gives execution permissions to the Lambda function.
 *   **AWS Lambda Function** (`auth-lambda-func`): A Node.js compute function configured with environment variables pointing to the DynamoDB table.
 *   **AWS API GatewayV2 (HTTP API)** (`prod-api-gateway`): Serves as the high-throughput entry point, routing requests to the Lambda function.
-*   **AWS Kinesis Stream** (`events-stream`): A data stream deployed specifically in `eu-west-1` to demonstrate cross-region infrastructure tracking.
+*   **AWS Kinesis Stream** (`events-stream`): A data stream to demonstrate event tracking.
+
+## 💰 Cost Estimation (AWS)
+
+This architecture is primarily serverless and "pay-as-you-go", meaning at rest with zero traffic, most services cost nothing. However, there is one provisioned resource.
+
+**Estimated Hourly Cost at Rest: ~$0.015 / hour** (approx. $11.00 / month)
+
+*   **AWS Kinesis Stream**: ~$0.015 per shard per hour. *(This is the only resource with a standing hourly charge).*
+*   **DynamoDB (Pay-Per-Request)**: $0 / hour. You only pay for active database Reads/Writes.
+*   **AWS Lambda & API Gateway**: $0 / hour. You only pay per request/invocation. Easily falls inside the AWS Free Tier for testing.
+
+> **⚠️ Important:** To avoid unexpected charges, remember to run `terraform destroy` in the `/terraform` directory when you are finished showcasing or testing the application!
+
+## 🔍 How to "See" MCP in the AWS Console
+
+Model Context Protocol (MCP) is an open standard, not a native AWS service, so there is no dedicated "MCP Dashboard" in the AWS Console. However, you can audit and observe the MCP agent's actions in AWS through the native telemetry and auditing tools:
+
+1. **AWS CloudTrail (The Audit Log)**: Every time the MCP agent requests context (e.g., reading resource states) or takes action (e.g., applying remediation), it uses the AWS SDK. You can view these API calls in **CloudTrail > Event history**. Look for the IAM User/Role that your MCP host is using to seeing exactly what the AI requested.
+2. **AWS Resource Groups & Tag Editor**: Go to **Resource Groups > Tag Editor** and search for resources with the tag `ManagedBy : mcp-agent`. This shows you the exact blast radius of resources the MCP agent has been granted context over.
+3. **Amazon CloudWatch**: If the agent detects drift and automatically remediates it (e.g., updating a DynamoDB table capacity), the resulting performance shifts and API calls will be visible in CloudWatch Metrics.
 
 ## 🚀 Getting Started
 

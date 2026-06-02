@@ -25,7 +25,7 @@ if (!USE_LIVE_AWS) {
     { id: "res-1", name: "prod-api-gateway", type: "AWS::ApiGateway::RestApi", region: "us-west-2", status: "available", lastUpdated: new Date().toISOString() },
     { id: "res-2", name: "auth-lambda-func", type: "AWS::Lambda::Function", region: "us-west-2", status: "available", lastUpdated: new Date().toISOString() },
     { id: "res-3", name: "users-table-ddb", type: "AWS::DynamoDB::Table", region: "us-west-2", status: "available", lastUpdated: new Date().toISOString() },
-    { id: "res-4", name: "events-stream", type: "AWS::Kinesis::Stream", region: "eu-west-1", status: "available", lastUpdated: new Date().toISOString() }
+    { id: "res-4", name: "events-stream", type: "AWS::Kinesis::Stream", region: "us-west-2", status: "available", lastUpdated: new Date().toISOString() }
   ];
 
   mcpHistory = [
