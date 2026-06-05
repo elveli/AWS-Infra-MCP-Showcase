@@ -78,12 +78,13 @@ The Kinesis Data Stream (`events-stream`) is automatically provisioned when you 
      --query 'ShardIterator' \
      --output text)
 
-   # 2. Read the records from the stream (and automatically decode the first record)
+   # 2. Read the records from the stream
    aws kinesis get-records \
      --shard-iterator $SHARD_ITERATOR \
-     --region us-west-2 | jq -r '.Records[0].Data' | base64 --decode
+     --region us-west-2
    ```
-   *(Note: The `Data` field returned by AWS is base64-encoded. The command above uses `jq` and `base64` to cleanly extract and decode the text in your terminal).*
+
+   *(Note: The `Data` field inside the `Records` array is returned as base64. If you see `"Records": []` in the output, Kinesis hasn't returned your event yet—you may need to run `get-records` again using the `NextShardIterator`. If you try to pipe an empty result through `jq -r '.Records[0].Data' | base64 --decode`, you will see artifact text like `e%`. This is because `jq` outputs the literal string `"null"`, which base64-decodes into garbage characters. Run the base command above first to visually verify the data is there!)*
 
 ## 🚀 Getting Started
 
