@@ -50,7 +50,7 @@ This architecture is primarily serverless and "pay-as-you-go", meaning at rest w
 
 Model Context Protocol (MCP) is an open standard, not a native AWS service, so there is no dedicated "MCP Dashboard" in the AWS Console. However, you can audit and observe the MCP agent's actions in AWS through the native telemetry and auditing tools:
 
-1. **AWS CloudTrail (The Audit Log)**: Every time the MCP agent requests context (e.g., reading resource states) or takes action (e.g., applying remediation), it uses the AWS SDK. You can view these API calls in **CloudTrail > Event history**. Look for the IAM User/Role that your MCP host is using to seeing exactly what the AI requested.
+1. **AWS CloudTrail (The Audit Log)**: Every time the MCP agent requests context (e.g., reading resource states) or takes action (e.g., applying remediation), it uses the AWS SDK. You can view these API calls in **CloudTrail > Event history**. Filter the events by the IAM User or Role that your MCP host is running under to see the exact AWS API commands the AI triggered.
 2. **AWS Resource Groups & Tag Editor**: Go to **Resource Groups > Tag Editor** and search for resources with the tag `ManagedBy : mcp-agent`. This shows you the exact blast radius of resources the MCP agent has been granted context over.
 3. **Amazon CloudWatch**: If the agent detects drift and automatically remediates it (e.g., updating a DynamoDB table capacity), the resulting performance shifts and API calls will be visible in CloudWatch Metrics.
 
