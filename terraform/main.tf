@@ -50,14 +50,32 @@ resource "aws_iam_role" "lambda_exec" {
   })
 }
 
+data "archive_file" "lambda_dummy" {
+  type        = "zip"
+  output_path = "${path.module}/dummy_payload.zip"
+
+  source {
+    content  = <<EOF
+exports.handler = async (event) => {
+  return {
+    statusCode: 200,
+    body: JSON.stringify('Hello from Dummy Payload!'),
+  };
+};
+EOF
+    filename = "index.js"
+  }
+}
+
 resource "aws_lambda_function" "auth_lambda" {
   function_name = "auth-lambda-func"
   role          = aws_iam_role.lambda_exec.arn
   handler       = "index.handler"
   runtime       = "nodejs20.x"
 
-  # Dummy filename for showcase purposes
-  filename      = "dummy_payload.zip"
+  # Uses a dynamically generated zip file
+  filename         = data.archive_file.lambda_dummy.output_path
+  source_code_hash = data.archive_file.lambda_dummy.output_base64sha256
 
   environment {
     variables = {
