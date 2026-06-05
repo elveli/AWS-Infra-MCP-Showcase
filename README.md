@@ -13,6 +13,7 @@ The [Model Context Protocol (MCP)](https://modelcontextprotocol.io/) is an open 
 1. **MCP Resources (Providing Context)**: An AI agent needs to know what is running. The Node.js backend represents an MCP Server, exposing live AWS telemetry (via CloudWatch and Tagging APIs) and local `terraform.tfstate` files as standardized MCP `resources`. 
 2. **MCP Tools (Taking Action)**: To fix infrastructure, the AI needs actionable commands. The backend defines critical infrastructure actions (e.g., `plan_terraform`, `apply_terraform`, `check_drift`) as MCP `tools`.
 3. **The Agent Loop (Visibility)**: The dedicated **AI Agent Panel** in the bottom-left of the Dashboard UI visualizes this real-time interaction. You can watch the agent passively poll context via `resources/read`, identify anomalies (Drift), and autonomously execute a `tools/call` (like `apply_terraform`) to restore state parity.
+4. **The Telemetry Graph**: The dashboard features an animated line chart representing active API requests and container errors. To ensure an engaging demonstration out-of-the-box (without requiring you to generate real, sustained HTTP load against your AWS account and wait for CloudWatch metric aggregation), this specific graph receives **simulated mock heartbeat data**, generating randomized numeric spikes per tick to illustrate the visual concept of live metric monitoring alongside MCP commands.
 
 *(Note: To provide a reliable, high-speed UI demonstration without incurring constant LLM token costs, the Express backend orchestrates a simulated AI reasoning loop that behaves exactly like an MCP client, overlaying those simulated decisions onto your real AWS resource data).*
 
@@ -20,7 +21,7 @@ The [Model Context Protocol (MCP)](https://modelcontextprotocol.io/) is an open 
 How does this system actually work together?
 
 1. **Provisioning (Terraform)**: You run `terraform apply` locally. This creates the physical infrastructure in your real AWS account. All resources are tagged with `ManagedBy = "mcp-agent"`.
-2. **Telemetry & Discovery (Express.js Backend)**: The Node.js server acts as the "MCP Host". It uses the AWS SDK to query the `ResourceGroupsTaggingAPIClient` and `CloudWatchClient` to dynamically discover anything running in your account with that tag.
+2. **Telemetry & Discovery (Express.js Backend)**: The Node.js server acts as the bridge (the "MCP Host") between your AWS environment and the AI agent. Instead of having a hardcoded list of your infrastructure, the server actively scans your AWS account using standard AWS API calls to find any resources carrying the `ManagedBy = "mcp-agent"` tag. It retrieves their live status and translates it into a standardized "context" format that an AI can easily read.
 3. **AI Contextualization (Simulation)**: In a full MCP architecture, an AI Agent uses this data context to reason about your architecture. Our backend simulates this agent reasoning loop, deciding if infrastructure is healthy or if drift has occurred based on live remote state vs local tfstate.
 4. **Real-time UI Visualization (React)**: The Express backend opens a highly efficient Server-Sent Events (SSE) stream to the React frontend, pumping a live feed of agent thoughts, telemetry metrics, and AWS resource states instantly to the dashboard.
 
